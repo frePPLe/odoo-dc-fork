@@ -498,6 +498,7 @@ class exporter(object):
             "standard_price",
             "categ_id",
             "product_variant_ids",
+            "product_family",
         ]
         self.product_templates = {}
         offset = 0
@@ -589,11 +590,14 @@ class exporter(object):
                     }
                     self.product_product[i["id"]] = prod_obj
                     self.product_template_product[i["product_tmpl_id"][0]] = prod_obj
-                    yield '<item name=%s cost="%f" category=%s subcategory="%s,%s">\n' % (
+                    product_family = tmpl["product_family"]
+                    yield '<item name=%s cost="%f" category=%s subcategory="%s,%s">%s\n' % (
                         quoteattr(name),
                         max(0, (tmpl["list_price"] + (i["price_extra"] or 0)) or 0)
                         / self.convert_qty_uom(
-                            1.0, tmpl["uom_id"][0], i["product_tmpl_id"][0]
+                            1.0,
+                            tmpl["uom_id"][0],
+                            i["product_tmpl_id"][0],
                         ),
                         quoteattr(
                             "%s%s"
@@ -606,6 +610,9 @@ class exporter(object):
                         ),
                         self.uom_categories[self.uom[tmpl["uom_id"][0]]["category"]],
                         i["id"],
+                        ("<owner name=%s/>" % quoteattr(product_family))
+                        if product_family and len(product_family) > 0
+                        else "",
                     )
                     yielded_header = True
                     # Export suppliers for the item, if the item is allowed to be purchased
