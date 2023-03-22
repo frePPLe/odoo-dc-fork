@@ -380,7 +380,7 @@ class exporter(object):
 
             for loc_id in recs:
                 parent = fnd_parent(loc_id["id"])
-                if parent:
+                if parent and parent != -1:
                     self.map_locations[loc_id["id"]] = parent
 
     def export_customers(self):
