@@ -536,7 +536,7 @@ class exporter(object):
             "date_start",
             "price",
         ]
-        s_recs = s.search([])
+        s_recs = s.search([], order="price desc,delay desc")
         self.product_supplier = {}
         for s in s_recs.read(s_fields):
             if s["product_tmpl_id"][0] in self.product_supplier:
@@ -621,11 +621,13 @@ class exporter(object):
                         and i["product_tmpl_id"][0] in self.product_supplier
                     ):
                         yield "<itemsuppliers>\n"
+                        priority = len(self.product_supplier[i["product_tmpl_id"][0]])
                         for sup in self.product_supplier[i["product_tmpl_id"][0]]:
                             try:
                                 name = "%d %s" % (sup[0][0], sup[0][1])
-                                yield '<itemsupplier leadtime="P%dD" priority="1" size_minimum="%f" cost="%f"%s%s><supplier name=%s/></itemsupplier>\n' % (
+                                yield '<itemsupplier leadtime="P%dD" priority="%s" size_minimum="%f" cost="%f"%s%s><supplier name=%s/></itemsupplier>\n' % (
                                     sup[1],
+                                    priority,
                                     sup[2],
                                     sup[5],
                                     ' effective_end="%sT00:00:00"'
@@ -638,6 +640,7 @@ class exporter(object):
                                     else "",
                                     quoteattr(name),
                                 )
+                                priority -= 1
                             except Exception as e:
                                 logger.error(
                                     "Error exporting suppliers for product %s: %s"
