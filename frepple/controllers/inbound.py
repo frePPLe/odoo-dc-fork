@@ -125,8 +125,14 @@ class importer(object):
                             )
                             if product_supplierinfo:
                                 price_unit = product_supplierinfo.price
+                                product_lang = self.product.with_context(
+                                    lang=supplier_id.lang,
+                                    partner_id=supplier_id.id,
+                                )
+                                name = product_lang.display_name
                             else:
                                 price_unit = 0
+                                name = elem.get("item")
                             po_line = proc_orderline.create(
                                 {
                                     "order_id": supplier_reference[supplier_id],
@@ -135,7 +141,7 @@ class importer(object):
                                     "product_uom": int(uom_id),
                                     "date_planned": date_planned,
                                     "price_unit": price_unit,
-                                    "name": elem.get("item"),
+                                    "name": name,
                                 }
                             )
                             product_supplier_dict[(item_id, supplier_id)] = po_line
