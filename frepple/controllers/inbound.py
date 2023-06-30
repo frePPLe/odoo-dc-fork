@@ -125,11 +125,16 @@ class importer(object):
                             )
                             if product_supplierinfo:
                                 price_unit = product_supplierinfo.price
-                                product_lang = self.product.with_context(
-                                    lang=supplier_id.lang,
-                                    partner_id=supplier_id.id,
-                                )
-                                name = product_lang.display_name
+                                if (
+                                    product_supplierinfo.product_code
+                                    and product_supplierinfo.product_name
+                                ):
+                                    name = "[%s] %s" % (
+                                        product_supplierinfo.product_code,
+                                        product_supplierinfo.product_name,
+                                    )
+                                else:
+                                    name = elem.get("item")
                             else:
                                 price_unit = 0
                                 name = elem.get("item")
