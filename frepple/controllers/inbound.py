@@ -125,16 +125,21 @@ class importer(object):
                             )
                             if product_supplierinfo:
                                 price_unit = product_supplierinfo.price
-                                if (
+                                product_code = (
                                     product_supplierinfo.product_code
-                                    and product_supplierinfo.product_name
-                                ):
-                                    name = "[%s] %s" % (
-                                        product_supplierinfo.product_code,
-                                        product_supplierinfo.product_name,
-                                    )
-                                else:
-                                    name = elem.get("item")
+                                    if product_supplierinfo.product_code
+                                    else product.default_code
+                                )
+                                product_name = (
+                                    product_supplierinfo.product_name
+                                    if product_supplierinfo.product_name
+                                    else product.name
+                                )
+                                name = "[%s] %s" % (
+                                    product_code,
+                                    product_name,
+                                )
+
                             else:
                                 price_unit = 0
                                 name = elem.get("item")
