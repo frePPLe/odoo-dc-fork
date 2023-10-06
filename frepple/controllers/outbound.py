@@ -735,7 +735,7 @@ class exporter(object):
             subproduct_model = None
 
         # Loop over all bom records
-        bom_recs = self.env["mrp.bom"].search([])
+        bom_recs = self.env["mrp.bom"].search([], order="product_tmpl_id,sequence")
         bom_fields = [
             "product_qty",
             "product_uom_id",
@@ -746,6 +746,7 @@ class exporter(object):
             "sub_products",
             "sequence",
         ]
+        prevProduct = None
         for i in bom_recs.read(bom_fields):
             # Determine the location
             if i["routing_id"]:
@@ -763,11 +764,12 @@ class exporter(object):
 
                 # Determine operation name and item
                 product_buf = self.product_product.get(product_id, None)
-                if not product_buf:
+                if not product_buf or prevProduct == product_id:
                     logger.warning(
                         "skipping %s %s" % (i["product_tmpl_id"][0], i["routing_id"])
                     )
                     continue
+                prevProduct = product_id
                 uom_factor = self.convert_qty_uom(
                     1.0, i["product_uom_id"][0], i["product_tmpl_id"][0]
                 )
