@@ -625,7 +625,7 @@ class exporter(object):
                         for sup in self.product_supplier[i["product_tmpl_id"][0]]:
                             try:
                                 name = "%d %s" % (sup[0][0], sup[0][1])
-                                yield '<itemsupplier leadtime="P%dD" priority="%s" size_minimum="%f" cost="%f"%s%s><supplier name=%s/></itemsupplier>\n' % (
+                                yield '<itemsupplier leadtime="P%dD" batchwindow="P30D" priority="%s" size_minimum="%f" cost="%f"%s%s><supplier name=%s/></itemsupplier>\n' % (
                                     sup[1],
                                     priority,
                                     sup[2],
